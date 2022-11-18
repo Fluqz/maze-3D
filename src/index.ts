@@ -8,10 +8,14 @@ import { Globals } from "./app/globals"
 
 Globals.dom = document.getElementById('webGL')
 
+let isPause = true
 
 document.addEventListener('mousedown', () => {
 
-    game.start()
+    if(isPause) {
+        isPause = false
+        game.start()
+    }
 })
 
 let game = new Game(Globals.dom)
