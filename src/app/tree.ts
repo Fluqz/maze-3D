@@ -1,6 +1,6 @@
 import { BufferGeometry, InstancedMesh, Material, Mesh, Object3D, Quaternion, Vector3 } from "three";
 import { Oscillator, AmplitudeEnvelope, Gain } from "tone";
-import { getNote, getTonleiter, notes, tonleiter_pattern } from "./data/note-frequencies";
+import { AEOLIAN_SCALE, getNote, getScale, HEPTATONIC_SCALE, HIRAJOSHI_SCALE } from "./data/note-frequencies";
 import { PositionalAudio } from "./positional-audio";
 
 
@@ -18,9 +18,10 @@ export class Tree extends PositionalAudio{
     constructor(geometry, material) {
 
         super(
-            getTonleiter(
-                getNote('C' + Math.round((Math.random() * 3) + 2))
-            )[Math.round(Math.random() * tonleiter_pattern.length)].frequency
+            getScale(
+                getNote('F' + Math.round((Math.random() * 3) + 1)),
+                AEOLIAN_SCALE
+            )[Math.round(Math.random() * AEOLIAN_SCALE.length)].frequency
         , 30)
         // super(notes[Math.round(Math.random() * (notes.length - 1))].frequency, 40)
         // super((Math.random() * 300) + 100, 40)

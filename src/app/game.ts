@@ -9,6 +9,8 @@ import { Utils } from './util/utils'
 import { GameObject } from './object'
 import * as Tone from 'tone'
 
+import * as Stats from 'stats.js'
+
 export class Game {
 
     static i: Game
@@ -24,6 +26,9 @@ export class Game {
     public static scene: THREE.Scene
     public static renderTarget: THREE.WebGLRenderTarget
 
+    public static master: Tone.Gain
+
+
     objects: GameObject[]
 
     player: Player
@@ -32,6 +37,8 @@ export class Game {
 
     private clock: THREE.Clock
     private AFID: number
+
+    private stats: Stats
 
     constructor(dom: HTMLElement) {
 
@@ -44,6 +51,13 @@ export class Game {
         this.w = window.innerWidth
         this.h = window.innerHeight
         this.ratio = window.devicePixelRatio
+
+        this.stats = new Stats()
+        this.stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
+        document.body.appendChild(this.stats.dom)
+
+        Game.master = new Tone.Gain(.7)
+        Game.master.toDestination()
     
         Game.renderer = new THREE.WebGLRenderer({ antialias: true })
         Game.renderer.setSize(this.w, this.h)
@@ -63,7 +77,7 @@ export class Game {
     
         Game.scene = new THREE.Scene()
         // Game.scene.fog = new THREE.FogExp2( 0xefd1b5, .01 );
-        Game.scene.fog = new THREE.Fog(0xFFFFFF, 5, 50)
+        Game.scene.fog = new THREE.Fog(0xFFFFFF, 1, 50)
 
         // Cubemap
         const cubeMap = new THREE.CubeTextureLoader()
@@ -84,10 +98,10 @@ export class Game {
         dLight.castShadow = true
         dLight.shadow.camera.far = 200
         dLight.shadow.camera.near = .1
-        dLight.shadow.camera.top = 100
-        dLight.shadow.camera.bottom = -100
-        dLight.shadow.camera.left = -100
-        dLight.shadow.camera.right = 100
+        dLight.shadow.camera.top = 200
+        dLight.shadow.camera.bottom = -200
+        dLight.shadow.camera.left = -200
+        dLight.shadow.camera.right = 200
         dLight.shadow.mapSize.width = 4096
         dLight.shadow.mapSize.height = 4096
         Game.scene.add(dLight)
@@ -100,6 +114,24 @@ export class Game {
         this.player = undefined
         this.env = undefined
 
+    }
+
+    private isMuted: boolean = false
+    private stored_volume:number
+    toggleMute(m?: boolean) {
+
+        if(m == undefined) m = !this.isMuted
+
+        if(!this.isMuted) this.stored_volume = Game.master.gain.value
+        
+        this.isMuted = m
+
+        if(this.isMuted) {
+            Game.master.gain.linearRampToValueAtTime(0, Tone.context.currentTime + .03)
+        }
+        else {
+            Game.master.gain.linearRampToValueAtTime(this.stored_volume, Tone.context.currentTime + .03)
+        }
     }
 
     init() {
@@ -117,7 +149,6 @@ export class Game {
 
                 this.player = new Player(Game.camera)
                 Game.scene.add(this.player.obj)
-
 
                 this.loop()
     
@@ -148,16 +179,22 @@ export class Game {
 
     loop() {
 
-        window.cancelAnimationFrame(this.AFID)
-        this.AFID = window.requestAnimationFrame(this.loop.bind(this))
+
+
+        this.stats.begin()
 
         this.update()
 
-        // Game.renderer.setRenderTarget(Game.renderTarget)
-        // Game.renderer.render(Game.scene, Game.camera)
-    
-        // Game.renderer.setRenderTarget(null)
+        Game.renderer.setRenderTarget(Game.renderTarget)
         Game.renderer.render(Game.scene, Game.camera)
+    
+        Game.renderer.setRenderTarget(null)
+        Game.renderer.render(Game.scene, Game.camera)
+
+        this.stats.end()
+
+        window.cancelAnimationFrame(this.AFID)
+        this.AFID = window.requestAnimationFrame(this.loop.bind(this))
     }
 
     loadAssets() {
@@ -165,13 +202,14 @@ export class Game {
         return new Promise(resolve => {
 
             AssetManager.onload = () => {
-                console.log('RESOLVE MGMT')
+                console.log('Load fin')
                 resolve(null)
             }
+            resolve(null)
 
-            AssetManager.load('https://hitpuzzle.b-cdn.net/SolSeat_VR_00075_joined2.glb')
-            AssetManager.load('https://hitpuzzle.b-cdn.net/06627.glb')
-            AssetManager.load('https://hitpuzzle.b-cdn.net/LOWPOLY1%20(1).glb')
+            // AssetManager.load('https://hitpuzzle.b-cdn.net/SolSeat_VR_00075_joined2.glb')
+            // AssetManager.load('https://hitpuzzle.b-cdn.net/06627.glb')
+            // AssetManager.load('https://hitpuzzle.b-cdn.net/LOWPOLY1%20(1).glb')
             
         })
     }

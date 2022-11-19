@@ -1,5 +1,6 @@
 import { Quaternion, Vector3 } from "three";
 import * as Tone from "tone";
+import { Game } from "./game";
 import { M } from "./util/math";
 import { Utils } from "./util/utils";
 
@@ -33,7 +34,7 @@ export class PositionalAudio {
         // this.envelope = new Tone.AmplitudeEnvelope(0, 1, 1, 1)
         this.gain = new Tone.Gain(.5)
         this.oscillator.connect(this.gain)
-        this.gain.toDestination()
+        this.gain.connect(Game.master)
     }
 
     start(delta: number) : void {

@@ -68,8 +68,9 @@ export class Player extends GameObject {
         //     console.log(gltf)
         // })
 
-        let m = new THREE.Mesh(new THREE.BoxGeometry(.5, 1.8, .5), new THREE.MeshPhongMaterial({ color: 0x000000 }))
-        m.geometry.translate(0, m.geometry.parameters.height / 2, 0)
+        let m = new THREE.Mesh(new THREE.SphereGeometry(.5, 32, 32), new THREE.MeshDistanceMaterial())
+        // m.geometry.translate(0, .5, 0)
+        // m.geometry.translate(0, m.geometry.parameters.height / 2, 0)
         m.castShadow = true
         m.receiveShadow = true
         this.obj.add(m)

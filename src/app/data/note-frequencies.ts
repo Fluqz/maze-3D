@@ -1,51 +1,71 @@
 
-export interface NoteData {
+export type Note = {
     note: string,
     frequency: number,
 }
 
 
-
-/** Returns the 8 notes of a tonleiter. Pass in the prime note. */
-export const getTonleiter = (prime: NoteData) : NoteData[] => {
-
-    const i = notes.indexOf(prime)
-
-    if(i == -1) return null
-
-    const tonleiter: NoteData[] = []
-
-    tonleiter.push(prime)
-
-    let incr: number = 0
-    for (let p = 0; p < tonleiter_pattern.length; p++) {
-
-        incr += tonleiter_pattern[p]
-        tonleiter.push(notes[i + incr])
-    }
-
-    console.log('tonleiter', tonleiter)
-
-    return tonleiter
-}
-
-
-
-/** Prime, Sekunde, Terz, Quarte, Quinte, Sexte, Septime, Oktave, */
-export const tonleiter_pattern: number[] = [ 2, 2, 1, 2, 2, 2, 1 ]
-
+/** Returns a Note by name = [Note + Octave] = C3, C#0, .. */
 export const getNote = (note: string) => { 
 
     for(let n of notes) {
 
-        if(n.note === note) return n
+        if(n.note === note || n.note.length !== note.length &&  n.note.includes(note)) return n
     }
 
     return null
 }
 
+/** Returns the 8 notes of a tonleiter. Pass in the prime note. */
+export const getScale = (prime: Note, scale: number[]) : Note[] => {
+
+    const i = notes.indexOf(prime)
+
+    if(i == -1) return null
+
+    const ns: Note[] = []
+
+    ns.push(prime)
+
+    let incr: number = 0
+    for (let p = 0; p < scale.length; p++) {
+
+        incr += scale[p]
+        ns.push(notes[i + incr])
+    }
+
+    // console.log('SCALE', ns)
+
+    return ns
+}
+
+
+
+/** Prime, Sekunde, Terz, Quarte, Quinte, Sexte, Septime, Oktave, */
+/** Major Scale */
+export const IONIAN_SCALE: number[] = [ 2, 2, 1, 2, 2, 2, 1 ]
+export const DORIAN_SCALE: number[] = [ 2, 1, 2, 2, 2, 1, 2 ]
+export const PHRYGIAN_SCALE: number[] = [ 1, 2, 2, 2, 1, 2, 2 ]
+export const LYDIAN_SCALE: number[] = [ 2, 2, 2, 1, 2, 2, 1 ]
+export const MYXOLYDIAN_SCALE: number[] = [ 2, 2, 1, 2, 2, 1, 2 ]
+export const AEOLIAN_SCALE: number[] = [ 2, 1, 2, 2, 1, 2, 2 ]
+export const LOKRIAN_SCALE: number[] = [ 1, 2, 2, 1, 2, 2, 2 ]
+export const PENTATONIC_SCALE: number[] = [ 2, 3, 3, 2, 3 ]
+
+export const HIRAJOSHI_SCALE: number[] = [ 2, 1, 4, 1, 4 ]
+
+/** 5 Note blues scale */
+export const MINOR_PENTATONIC_SCALE: number[] = [ 3, 2, 2, 3, 2 ]
+/** 6 Note blues scale */
+export const HEXATONIC_SCALE: number[] = [ 3, 2, 1, 1, 3, 2 ]
+/** 7 Note blues scale */
+export const HEPTATONIC_SCALE: number[] = [ 2, 1, 2, 1, 3, 1, 2 ]
+/** 9 Note blues scale */
+export const BLUES_9NOTE_SCALE: number[] = [ 2, 1, 1, 1, 2, 2, 1, 1, 1 ]
+
+
 /** List of all notes. */
-export const notes: NoteData[] = [
+export const notes: Note[] = [
 
     { note: 'C0', frequency: 16.35	},
     { note: 'C#0/Db0', frequency: 17.32 },

@@ -11,6 +11,8 @@
         * { 
             margin: 0px;
             padding: 0px;
+
+            font-family: 'Courier New', Courier, monospace;
         }
 
         #key-note {
@@ -24,13 +26,34 @@
             width: 50px;
             height: 50px;
             text-align: center;
-
+            cursor: pointer;
         }
+
+        #mute {
+
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .hover:hover {
+
+            color: #00ff9d;
+        }
+
     </style>
 </head>
 <body>
     
-    <div id="key-note"><span>C</span></div>
+    <div id="key-note" class="hover"><span>C</span></div>
+    <div id="mute" class="hover"><span>M</span></div>
     <div id="webGL"></div>
 
     <script type="module" src="./bundle.js"></script>

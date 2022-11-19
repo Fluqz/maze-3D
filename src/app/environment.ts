@@ -1,6 +1,6 @@
 import * as Tone from 'tone'
 import * as THREE from 'three'
-import { BoxGeometry, Group, Mesh, MeshPhongMaterial, MeshDepthMaterial, MeshNormalMaterial, Object3D, PlaneGeometry } from 'three'
+import { BoxGeometry, Group, Mesh, MeshPhongMaterial, MeshDepthMaterial, MeshNormalMaterial, Object3D, PlaneGeometry, MeshStandardMaterial } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 import { AssetManager } from './asset-manager'
@@ -30,8 +30,9 @@ export class Environment extends GameObject {
 
         this.obj = new Object3D()
 
+        let ground = new Mesh(new PlaneGeometry(500, 500), new MeshStandardMaterial({ color: 0x000000 }))
 
-        let ground = new Mesh(new PlaneGeometry(1000, 1000), new MeshPhongMaterial({ color: 0xEEFFFF}))
+        console.log('tex',Game.renderTarget.texture.userData)
         ground.geometry.rotateX(-Math.PI / 2)
         ground.receiveShadow = true
 
@@ -43,12 +44,12 @@ export class Environment extends GameObject {
         // let material = new MeshDepthMaterial()
         let tree: Tree
 
-        for(let i = 0; i < 50; i++) {
+        for(let i = 0; i < 100; i++) {
 
             tree = new Tree(geometry, material)
             tree.create()
 
-            tree.position.set((Math.random() * 100) - 50, 0, (Math.random() * 100) - 50)
+            tree.position.set((Math.random() * 200) - 50, 0, (Math.random() * 200) - 50)
 
             this.obj.add(tree.mesh)
 
@@ -57,10 +58,10 @@ export class Environment extends GameObject {
     }
 
     construct(): void {
-        
     }
 
     update(delta: number) {
+        console.log('tex',Game.renderTarget.texture)
 
         this.obj.traverseVisible(o => {
 

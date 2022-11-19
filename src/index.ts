@@ -18,8 +18,28 @@ document.addEventListener('mousedown', () => {
     }
 })
 
+
 let game = new Game(Globals.dom)
 game.init()
+
+
+const muteBtn = document.querySelector('#mute')
+
+muteBtn.addEventListener('click', () => {
+
+    game.toggleMute()
+    
+})
+
+window.addEventListener('focus', () => {
+
+    game.toggleMute(false)
+})
+            
+window.addEventListener('blur', () => {
+
+    game.toggleMute(true)
+})
             
 window.onbeforeunload = () => {
     

@@ -28,7 +28,7 @@ export class AssetManager {
             let gltf = AssetManager.assets.get(path)
     
             if(gltf) {
-                console.log('CLONE')
+                // console.log('CLONE')
                 resolve(gltf)
             }
     
