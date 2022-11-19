@@ -179,16 +179,14 @@ export class Game {
 
     loop() {
 
-
-
         this.stats.begin()
 
         this.update()
 
-        Game.renderer.setRenderTarget(Game.renderTarget)
-        Game.renderer.render(Game.scene, Game.camera)
+        // Game.renderer.setRenderTarget(Game.renderTarget)
+        // Game.renderer.render(Game.scene, Game.camera)
     
-        Game.renderer.setRenderTarget(null)
+        // Game.renderer.setRenderTarget(null)
         Game.renderer.render(Game.scene, Game.camera)
 
         this.stats.end()
