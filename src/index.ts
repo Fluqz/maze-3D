@@ -2,20 +2,10 @@ import { Game } from './app/game'
 import { Globals } from './app/globals'
 
 
-
-
-
-
 Globals.dom = document.getElementById('webGL')
 
 const game = new Game(Globals.dom)
 game.init()
-
-
-
-
-
-
 
 
 

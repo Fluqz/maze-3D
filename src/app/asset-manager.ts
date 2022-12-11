@@ -1,13 +1,16 @@
 
 import * as THREE from "three"
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Globals } from "./globals"
 
 export class AssetManager {
 
-    static assets = new Map()
+    /** Map of all glTF's loaded. { key: path, value: GLTF } */
+    static assets = new Map<string, GLTF>()
     
+    /** THREE.LoadingManager instance */
     static mgmt = new THREE.LoadingManager()
+    /** THREE.GLTFLoader instance */
     static gltfLoader = new GLTFLoader(AssetManager.mgmt)
 
     static _onload : () => void
@@ -18,6 +21,7 @@ export class AssetManager {
     }
 
 
+    /** Load or fetch a glTF model by path. */
     static load(path: string) {
         console.log('load')
 
@@ -25,7 +29,7 @@ export class AssetManager {
 
             if(!path) reject()
 
-            let gltf = AssetManager.assets.get(path)
+            const gltf = AssetManager.assets.get(path)
     
             if(gltf) {
                 // console.log('CLONE')
@@ -40,21 +44,6 @@ export class AssetManager {
             },
             undefined,// progress => {  },
             error => { console.error(error); reject(); })
-        })
-    }
-
-    static get(path: string) {
-
-        if(!path.startsWith('http')) path = Globals.path + path
-
-        return new Promise((resolve, reject) => {
-
-            if(!path) reject()
-
-            AssetManager.load(path).then((gltf)=> {
-
-                resolve(gltf)
-            })
         })
     }
 }

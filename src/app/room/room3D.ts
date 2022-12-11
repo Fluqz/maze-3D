@@ -43,18 +43,6 @@ export class Room3D {
 
     update() {
 
-        let i = 0
-        for(let w of this.room.walls) {
-
-            this.walls[i].wall = w
-
-            if(this.walls.length > i) this.addWall(w)
-
-            i++
-        }
-
-        if(this.walls.length > this.room.walls.length) this.walls.splice(this.room.walls.length, this.walls.length - this.room.walls.length)
-
         this.connectWalls()
     }
 

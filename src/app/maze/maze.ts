@@ -2,6 +2,7 @@ import { Vector3 } from "three"
 import { Cell } from "./cell"
 
 
+/** A Wall represents a side of a square/cell */
 export class Wall {
     
     p1: Vector3
@@ -14,22 +15,36 @@ export class Wall {
     }
 }
 
+/** Will generate a Maze from a grid. */
 export class MazeGenerator {
 
+    /** Current Cell that is being checked */
     current: Cell
+    /** Next cell */
     next: Cell
 
+    /** Starting cell of the maze */
     start: Cell
+    /** Goal. Last cell of the maze. */
     end: Cell
 
+    /** Array of Cells making a grid */
     grid: Cell[] = []
+    /** 
+     * The array keeps track of all cells since it started creating a path. 
+     * When finding a dead end, it is backtracking and popping cells of the stack 
+     * till it finds a cell where a new path is possible.
+     * */
     stack: Cell[] = []
+    /** Array of all active Walls */
     walls: Wall[] = []
+    /** Array of all active points */
     points: Vector3[] = []
 
+    /** Amount of rows in the maze grid */
     rows: number
+    /** Amount of rows in the maze grid */
     cols: number
-    dimension: number = 200
 
 
     constructor(rows?:number, cols?:number) {

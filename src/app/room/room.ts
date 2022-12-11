@@ -78,17 +78,8 @@ export class Room {
         return null
     }
 
-    
-    private colors = ['#FF00FF', '#FFFF00', '#00FFFF', '#00FF00', '#000000', '#456789', 
-                        '#6D2369', '#8e7cc3', '#005c5c', '#eab9ac', '#00ffd3', '#fac420', 
-                        '#99cccc', '#b9bdd0', '#d4ff00', '#9188ab', '#ffc0cb']
     getRndColor() {
-
-        // let i = Math.round(Math.random() * (this.colors.length - 1))
-        // let c = this.colors.splice(i, 1)
-        // return c[0]
 
         return '#' + Math.floor(Math.random()*16777215).toString(16)
     }
-
 }
