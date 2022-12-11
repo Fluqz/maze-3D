@@ -1,53 +1,43 @@
-
-
-import * as Tone from 'tone'
 import { Game } from './app/game'
-import { Globals } from "./app/globals"
+import { Globals } from './app/globals'
+
+
+
 
 
 
 Globals.dom = document.getElementById('webGL')
 
-let isPause = true
-
-document.addEventListener('mousedown', () => {
-
-    if(isPause) {
-        isPause = false
-        game.start()
-    }
-})
-
-
-let game = new Game(Globals.dom)
+const game = new Game(Globals.dom)
 game.init()
 
 
-const muteBtn = document.querySelector('#mute')
 
-muteBtn.addEventListener('click', () => {
 
-    game.toggleMute()
-    
+
+
+
+
+
+document.addEventListener('keydown', (e) => {
+
 })
 
 window.addEventListener('focus', () => {
 
-    game.toggleMute(false)
 })
             
 window.addEventListener('blur', () => {
 
-    game.toggleMute(true)
 })
             
 window.onbeforeunload = () => {
-    
-    // game.destroy()
-    return
+
+    game.destroy()
 }
 
 window.onresize = () => {
 
     game.resize()
+
 }

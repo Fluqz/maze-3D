@@ -5,11 +5,10 @@ import { Globals } from './globals'
 import { AssetManager } from './asset-manager'
 import { ThirdPersonControl } from './third-person-controls'
 import { M } from './util/math'
-import { GameObject } from './object'
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
 
-export class Player extends GameObject {
+export class Player {
 
     static list: Player[] = []
 
@@ -36,8 +35,6 @@ export class Player extends GameObject {
     state: string
 
     constructor(camera: THREE.PerspectiveCamera) {
-
-        super()
 
         Player.list.push(this)
             

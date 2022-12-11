@@ -3,6 +3,9 @@ import { CubeTexture } from "three"
 export class Utils {
 
 
+
+
+
     static dispose(obj) {
 
         obj.traverse(object => {

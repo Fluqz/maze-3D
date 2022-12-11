@@ -1,15 +1,17 @@
 
 import * as THREE from 'three'
 
-import { Environment } from './environment'
-import { AssetManager } from './asset-manager'
+import * as Stats from 'stats.js'
 import { Input } from './input'
 import { Player } from './player'
+import { AssetManager } from './asset-manager'
 import { Utils } from './util/utils'
-import { GameObject } from './object'
-import * as Tone from 'tone'
-
-import * as Stats from 'stats.js'
+import { MazeGenerator } from './maze/maze'
+import { Node } from './room/node'
+import { Room } from './room/room'
+import { Room3D } from './room/room3D'
+import { Vector3 } from 'three'
+import { Wall } from './room/wall'
 
 export class Game {
 
@@ -24,16 +26,8 @@ export class Game {
     public static renderer: THREE.WebGLRenderer
     public static camera: THREE.PerspectiveCamera
     public static scene: THREE.Scene
-    public static renderTarget: THREE.WebGLRenderTarget
-
-    public static master: Tone.Gain
-
-
-    objects: GameObject[]
 
     player: Player
-
-    env: Environment
 
     private clock: THREE.Clock
     private AFID: number
@@ -44,7 +38,7 @@ export class Game {
 
         Game.i = this
         
-        this.AFID = undefined
+        this.AFID = null
         this.clock
         this.dom = dom
 
@@ -56,12 +50,9 @@ export class Game {
         this.stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
         document.body.appendChild(this.stats.dom)
 
-        Game.master = new Tone.Gain(.7)
-        Game.master.toDestination()
-    
         Game.renderer = new THREE.WebGLRenderer({ antialias: true })
         Game.renderer.setSize(this.w, this.h)
-        Game.renderer.setClearColor(0xFFFFFF)
+        Game.renderer.setClearColor(0xf4eedb)
         Game.renderer.shadowMap.enabled = true
         Game.renderer.shadowMap.type = THREE.PCFSoftShadowMap
         this.dom.append(Game.renderer.domElement)
@@ -69,31 +60,26 @@ export class Game {
         Game.camera = new THREE.PerspectiveCamera(100, this.w / this.h, .1, 1000)
         Game.camera.position.set(0, 3, 0)
 
-        Game.renderTarget = new THREE.WebGLRenderTarget(this.w, this.h, {
-            wrapS: THREE.RepeatWrapping,
-            wrapT: THREE.RepeatWrapping,
-
-        })
-    
         Game.scene = new THREE.Scene()
+        
         // Game.scene.fog = new THREE.FogExp2( 0xefd1b5, .01 );
-        Game.scene.fog = new THREE.Fog(0xFFFFFF, 1, 50)
+        // Game.scene.fog = new THREE.Fog(0xf4eedb, 1, 50)
 
         // Cubemap
-        const cubeMap = new THREE.CubeTextureLoader()
-            .setPath( 'assets/images/cubemap/' )
-            .load( [
-                'px.png',
-                'nx.png',
-                'py.png',
-                'ny.png',
-                'pz.png',
-                'nz.png'
-        ])
+        // const cubeMap = new THREE.CubeTextureLoader()
+        //     .setPath( 'assets/images/cubemap/' )
+        //     .load( [
+        //         'px.png',
+        //         'nx.png',
+        //         'py.png',
+        //         'ny.png',
+        //         'pz.png',
+        //         'nz.png'
+        // ])
         // Game.scene.background = cubeMap
-        // Game.scene.add(new THREE.GridHelper(1000, 1000))
+        Game.scene.add(new THREE.GridHelper(1000, 1000))
 
-        let dLight = new THREE.DirectionalLight(0xFFFFFF, .8)
+        let dLight = new THREE.DirectionalLight(0xf4eedb, .8)
         dLight.position.set(50, 50, 50)
         dLight.castShadow = true
         dLight.shadow.camera.far = 200
@@ -105,33 +91,9 @@ export class Game {
         dLight.shadow.mapSize.width = 4096
         dLight.shadow.mapSize.height = 4096
         Game.scene.add(dLight)
-        Game.scene.add(new THREE.HemisphereLight(0xFFFFFF, 0xFFFFFF, .7))
+        Game.scene.add(new THREE.HemisphereLight(0xf4eedb, 0xf4eedb, .7))
 
         new Input(this.dom)
-
-        this.objects = []
-
-        this.player = undefined
-        this.env = undefined
-
-    }
-
-    private isMuted: boolean = false
-    private stored_volume:number
-    toggleMute(m?: boolean) {
-
-        if(m == undefined) m = !this.isMuted
-
-        if(!this.isMuted) this.stored_volume = Game.master.gain.value
-        
-        this.isMuted = m
-
-        if(this.isMuted) {
-            Game.master.gain.linearRampToValueAtTime(0, Tone.context.currentTime + .03)
-        }
-        else {
-            Game.master.gain.linearRampToValueAtTime(this.stored_volume, Tone.context.currentTime + .03)
-        }
     }
 
     init() {
@@ -139,16 +101,56 @@ export class Game {
 
         this.clock = new THREE.Clock()
 
+
         this.loadAssets().then(() => {
 
             return new Promise((resolve) => {
 
-                this.env = new Environment()
-                this.env.create()
-                Game.scene.add(this.env.obj)
-
                 this.player = new Player(Game.camera)
                 Game.scene.add(this.player.obj)
+
+                const mg = new MazeGenerator(10, 10)
+                mg.step()
+        
+                while(mg.stack.length > 0) {
+        
+                    mg.step()
+                }
+                mg.analyse()
+
+
+                let room = new Room()
+                let node1
+                let node2
+                let wall
+
+                let points: Vector3[] = []
+                for(let p of mg.points) {
+
+                    node1 = room.makeNode(p)
+                }
+
+
+                const getNode = (p: Vector3) => {
+
+                    for(let n of room.nodes) {
+
+                        if(p.equals(n.position)) return n
+                    }
+
+                    return null
+                }
+
+                for(let w of mg.walls) {
+
+                    wall = room.makeWall(getNode(w.p1), getNode(w.p2))
+                }
+
+
+                let room3D = new Room3D(room)
+                room3D.create()
+                room3D.obj.scale.set(5, 50, 5)
+                Game.scene.add(room3D.obj)
 
                 this.loop()
     
@@ -159,22 +161,9 @@ export class Game {
         })
     }
 
-    start() {
-        
-        Tone.Transport.start()
-
-        for(let tree of this.env.trees) {
-
-            tree.start(Tone.context.currentTime)
-        }
-
-    }
-
     update() {
 
         for(let p of Player.list) p.update(this.clock.getDelta())
-
-        this.env.update(0)
     }
 
     loop() {
@@ -183,10 +172,6 @@ export class Game {
 
         this.update()
 
-        // Game.renderer.setRenderTarget(Game.renderTarget)
-        // Game.renderer.render(Game.scene, Game.camera)
-    
-        // Game.renderer.setRenderTarget(null)
         Game.renderer.render(Game.scene, Game.camera)
 
         this.stats.end()
@@ -200,7 +185,7 @@ export class Game {
         return new Promise(resolve => {
 
             AssetManager.onload = () => {
-                console.log('Load fin')
+                console.log('Assets ready')
                 resolve(null)
             }
             resolve(null)
