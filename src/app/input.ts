@@ -1,20 +1,20 @@
 
 export interface MouseMapping {
 
-    mouseLeft?: string
-    mouseMiddle?: string
-    mouseWheelUp?: string
-    mouseWheelDown?: string
-    mouseRight?: string
+    mouseLeft?: number
+    mouseMiddle?: number
+    mouseWheelUp?: number
+    mouseWheelDown?: number
+    mouseRight?: number
 }
 export interface KeyboardMapping {
 
-    forward?: string
-    back?: string
-    left?: string
-    right?: string
-    jump?: string
-    interact?: string
+    forward?: number
+    back?: number
+    left?: number
+    right?: number
+    jump?: number
+    interact?: number
 }
 
 export interface Mapping {
@@ -25,38 +25,39 @@ export interface Mapping {
 
 export enum InputMappings {
 
-    ArrowUp = 'ArrowUp',
-    ArrowDown = 'ArrowDown',
-    ArrowLeft = 'ArrowLeft',
-    ArrowRight = 'ArrowRight',
-    W = 'w',
-    A = 'a',
-    S = 's',
-    D = 'd',
-    Space = 'space',
-    Shift = 'Shift',
-    Ctrl = 'Ctrl',
-    Alt = 'Alt',
+    ArrowUp = 38,
+    ArrowDown = 40,
+    ArrowLeft = 37,
+    ArrowRight = 39,
+    W = 87,
+    A = 65,
+    S = 83,
+    D = 68,
+    Space = 32,
+    Shift = 16,
+    Ctrl = 17,
+    Alt = 18,
 
     
 }
 
+
 export class Input {
 
     static isMouseDown: boolean = false
-    static mouse: string[]
-    static keyboard: string[]
+    static mouse: number[]
+    static keyboard: number[]
     static mapping: Mapping = {
 
         mouse: {
 
         },
         keyboard: {
-            forward: 'w',
-            back: 's',
-            left: 'a',
-            right: 'd',
-            jump: ' '
+            forward: InputMappings.W,
+            back: InputMappings.S,
+            left: InputMappings.A,
+            right: InputMappings.D,
+            jump: InputMappings.Space
         }
     }
 
@@ -93,7 +94,7 @@ export class Input {
 
     onPointerDown(e) {
 
-        // console.log('pointerdown', e)
+        console.log('pointerdown', e)
 
         if(!Input.mouse.includes(e.button)) Input.mouse.push(e.button)
     }
@@ -107,15 +108,15 @@ export class Input {
 
     onKeyDown(e) {
 
-        // console.log('keydown', e)
+        // console.log('keydown', e.key, e.code, e.keyCode, e)
 
-        if(!Input.keyboard.includes(e.key)) Input.keyboard.push(e.key)
+        if(!Input.keyboard.includes(e.keyCode)) Input.keyboard.push(e.keyCode)
     }
 
     onKeyUp(e) {
 
-        // console.log('keyup', e)
+        // console.log('keyup', e.key, e.code, e.keyCode, e)
 
-        if(Input.keyboard.includes(e.key)) Input.keyboard.splice(Input.keyboard.indexOf(e.key), 1)
+        if(Input.keyboard.includes(e.keyCode)) Input.keyboard.splice(Input.keyboard.indexOf(e.keyCode), 1)
     }
 }
